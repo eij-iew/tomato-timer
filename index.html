@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#e5483f">
+  <meta name="description" content="A calm, private-by-default Pomodoro timer that works without an account.">
+  <title>Tomato Timer</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ccircle cx='32' cy='35' r='24' fill='%23e5483f'/%3E%3Cpath d='M32 15c-4-6-10-7-13-4 5 1 7 5 8 8-5-2-9-1-12 2 6 2 11 2 17-1 6 3 11 3 17 1-3-3-7-4-12-2 1-3 3-7 8-8-3-3-9-2-13 4Z' fill='%232f6a4f'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <main class="app-shell">
+    <header class="topbar">
+      <a class="brand" href="#" aria-label="Tomato Timer home">
+        <span class="brand-mark" aria-hidden="true">●</span>
+        <span>Tomato Timer</span>
+      </a>
+      <button class="icon-button" id="settingsButton" aria-label="Open settings" title="Settings">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 15.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7Z"/><path d="M19.4 15a1.7 1.7 0 0 0 .34 1.88l.06.06-2.83 2.83-.06-.06a1.7 1.7 0 0 0-1.88-.34 1.7 1.7 0 0 0-1.03 1.56V21h-4v-.08a1.7 1.7 0 0 0-1.03-1.56 1.7 1.7 0 0 0-1.88.34l-.06.06-2.83-2.83.06-.06A1.7 1.7 0 0 0 4.6 15 1.7 1.7 0 0 0 3.08 14H3v-4h.08A1.7 1.7 0 0 0 4.6 9a1.7 1.7 0 0 0-.34-1.88l-.06-.06 2.83-2.83.06.06A1.7 1.7 0 0 0 8.97 4.6 1.7 1.7 0 0 0 10 3.08V3h4v.08a1.7 1.7 0 0 0 1.03 1.56 1.7 1.7 0 0 0 1.88-.34l.06-.06 2.83 2.83-.06.06A1.7 1.7 0 0 0 19.4 9 1.7 1.7 0 0 0 20.92 10H21v4h-.08A1.7 1.7 0 0 0 19.4 15Z"/></svg>
+      </button>
+    </header>
+
+    <section class="timer-card" aria-labelledby="modeTitle">
+      <div class="mode-tabs" role="tablist" aria-label="Timer mode">
+        <button class="mode-tab active" role="tab" aria-selected="true" data-mode="focus">Focus</button>
+        <button class="mode-tab" role="tab" aria-selected="false" data-mode="short">Short break</button>
+        <button class="mode-tab" role="tab" aria-selected="false" data-mode="long">Long break</button>
+      </div>
+
+      <div class="timer-face">
+        <svg class="progress-ring" viewBox="0 0 320 320" aria-hidden="true">
+          <circle class="ring-track" cx="160" cy="160" r="146"/>
+          <circle class="ring-progress" id="ringProgress" cx="160" cy="160" r="146"/>
+        </svg>
+        <div class="timer-content">
+          <p class="eyebrow" id="modeTitle">Focus session</p>
+          <time id="timer" datetime="PT25M">25:00</time>
+          <p class="round-label" id="roundLabel">Session 1 of 4</p>
+        </div>
+      </div>
+
+      <div class="controls">
+        <button class="secondary-button" id="resetButton" aria-label="Reset timer" title="Reset (R)">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4v6h6"/><path d="M5.5 15a7.5 7.5 0 1 0 .7-7.9L4 10"/></svg>
+        </button>
+        <button class="primary-button" id="startButton">Start focus</button>
+        <button class="secondary-button" id="skipButton" aria-label="Skip to next stage" title="Skip (S)">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 5 9 7-9 7V5Z"/><path d="M18 5v14"/></svg>
+        </button>
+      </div>
+      <p class="shortcut-hint"><kbd>Space</kbd> start / pause · <kbd>R</kbd> reset</p>
+    </section>
+
+    <section class="today-card" aria-labelledby="todayTitle">
+      <div>
+        <p class="eyebrow" id="todayTitle">Today</p>
+        <p class="today-count"><strong id="todayCount">0</strong> sessions</p>
+      </div>
+      <div class="tomatoes" id="tomatoes" aria-label="Sessions completed today"></div>
+      <button class="text-button" id="clearToday">Clear</button>
+    </section>
+  </main>
+
+  <dialog id="settingsDialog">
+    <form method="dialog" id="settingsForm">
+      <div class="dialog-header">
+        <div>
+          <p class="eyebrow">Preferences</p>
+          <h2>Set your rhythm</h2>
+        </div>
+        <button class="icon-button" value="cancel" aria-label="Close settings">×</button>
+      </div>
+      <div class="field-grid">
+        <label>Focus minutes<input id="focusMinutes" type="number" min="1" max="120" inputmode="numeric" required></label>
+        <label>Short break minutes<input id="shortMinutes" type="number" min="1" max="60" inputmode="numeric" required></label>
+        <label>Long break minutes<input id="longMinutes" type="number" min="1" max="90" inputmode="numeric" required></label>
+        <label>Sessions before long break<input id="roundsBeforeLong" type="number" min="1" max="12" inputmode="numeric" required></label>
+      </div>
+      <label class="switch-row"><span><strong>Auto-start next stage</strong><small>Continue immediately when a stage ends</small></span><input id="autoStart" type="checkbox" role="switch"></label>
+      <label class="switch-row"><span><strong>Completion sound</strong><small>Play a soft chime at the end of each stage</small></span><input id="soundEnabled" type="checkbox" role="switch"></label>
+      <div class="dialog-actions">
+        <button class="ghost-button" value="cancel">Cancel</button>
+        <button class="save-button" id="saveSettings" value="default">Save settings</button>
+      </div>
+    </form>
+  </dialog>
+
+  <script src="app.js"></script>
+</body>
+</html>
